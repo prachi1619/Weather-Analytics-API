@@ -10,8 +10,8 @@ import { Repository } from "typeorm";
 export class WeatherService {
     constructor(
         private readonly httpService: HttpService,
-        // @InjectRepository(CityWeather)
-        // private readonly cityRepo: Repository<CityWeather>,
+        @InjectRepository(CityWeather)
+        private readonly cityRepo: Repository<CityWeather>,
     ){}
 
     private API_KEY = process.env.WEATHER_API_KEY;
@@ -22,14 +22,14 @@ export class WeatherService {
                 this.httpService.get(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.API_KEY}&units=metric`)
             );
             const data = response.data;
-        //     const weather = this.cityRepo.create({
-        //         city,
-        //         temperature:data.main.temp,
-        //         minTemp: data.main.temp_min,
-        //         maxTemp:data.main.temp_max
-        // });
+            const weather = this.cityRepo.create({
+                city,
+                temperature:data.main.temp,
+                minTemp: data.main.temp_min,
+                maxTemp:data.main.temp_max
+        });
 
-        // await this.cityRepo.save(weather);
+        await this.cityRepo.save(weather);
         return data;
         }catch(error){
             throw new HttpException(
